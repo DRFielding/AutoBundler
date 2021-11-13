@@ -1,10 +1,13 @@
 import PyPDF2
+from PyPDF2.pdf import PdfFileReader
+from docx import Document
+from docx.shared import Cm, Pt
 import os
 import datetime
 from datetime import date, datetime as DateTime
 
 class document:
-    def __init__(self,doc_type,name,date_string):
+    def __init__(self,doc_type,name,date_string,path_string):
         if doc_type == 1 or doc_type == "1":
             self.doc_type = "Pleadings"
         elif doc_type == 2:
@@ -20,11 +23,15 @@ class document:
             self.doc_type = "Null"
         self.name = name
         self.date = datetime.date.fromisoformat(date_string)
+        self.path_string = path_string
+        print(path_string)
 
 def returnDate(doc_arg):
     return doc_arg.date
 
 def main():
+    print("Initialising PDF handling...")
+
     dir = input("Please enter the directory to bundle from: ")
 
     print(dir)
@@ -34,7 +41,7 @@ def main():
     for doc in docs:
         print(doc)
         doc_proc = doc.strip(".pdf").split(";")
-        doc_class = document(int(doc_proc[0]), doc_proc[1], doc_proc[2])
+        doc_class = document(int(doc_proc[0]), doc_proc[1], doc_proc[2], (dir + "/" + str(doc)))
         doc_list.append(doc_class)
     
     print(str(doc_list))
@@ -55,10 +62,14 @@ def main():
         print(doc.name + ": " + str(doc.date))
 
     with open(dir + "/ListOfDocuements_" + str(date.today()) + ".txt", "w+") as x:
-        count = 1
+        index_count = 1
+        start_page = 1
         for doc in master_list:
-            x.write(str(count) + ": " + doc.name + " - " + str(doc.date) + "\n")
-            count += 1
+            pdf_read = PdfFileReader(doc.path_string)
+            end_page = start_page + int(pdf_read.getNumPages())
+            x.write(str(index_count) + ": " + doc.name + " : " + str(doc.date) + " : " + str(start_page) + "-" + str(end_page) + "\n")
+            index_count += 1
+            start_page = end_page
 
     input("Press enter to exit")
 
