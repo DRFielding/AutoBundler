@@ -1,4 +1,5 @@
 import PyPDF2
+from PyPDF2.merger import PdfFileMerger
 from PyPDF2.pdf import PdfFileReader
 from docx import Document
 from docx.shared import Cm, Pt
@@ -66,10 +67,69 @@ def main():
         start_page = 1
         for doc in master_list:
             pdf_read = PdfFileReader(doc.path_string)
-            end_page = start_page + int(pdf_read.getNumPages())
-            x.write(str(index_count) + ": " + doc.name + " : " + str(doc.date) + " : " + str(start_page) + "-" + str(end_page) + "\n")
+            doc_pages = int(pdf_read.getNumPages())
+            if doc_pages == 1:
+                end_page = start_page
+            else:
+                end_page = start_page + int(pdf_read.getNumPages())
+            if start_page == end_page:
+                x.write(str(index_count) + ": " + doc.name + " : " + str(doc.date) + " : " + str(start_page) + "\n")
+            else:
+                x.write(str(index_count) + ": " + doc.name + " : " + str(doc.date) + " : " + str(start_page) + "-" + str(end_page) + "\n")
             index_count += 1
-            start_page = end_page
+            start_page = end_page + 1
+
+    start_page = 1
+    end_page = 0
+    index_count = 0
+
+    print("List completed, see text file in given directory!")
+
+    pdf_merge = PdfFileMerger()
+    for doc in master_list:
+        pdf_merge.append(doc.path_string)
+    pdf_merge.write(dir + "/bundle.pdf")
+
+    print("Bundle is completed, see bundle.pdf!")
+
+    table_doc = Document()
+    table = table_doc.add_table(0,0)
+    table.style = 'TableGrid'
+    first_column_width = 5
+    second_column_with = 10
+    third_column_width = 10
+    fourth_column_width = 10
+
+    table.add_column(Cm(first_column_width))
+    table.add_column(Cm(second_column_with))
+    table.add_column(Cm(third_column_width))
+    table.add_column(Cm(fourth_column_width))
+
+    for index,doc in enumerate(master_list):
+        pdf_read = PdfFileReader(doc.path_string)
+        doc_pages = int(pdf_read.getNumPages())
+        if doc_pages == 1:
+            end_page = start_page
+        else:
+            end_page = start_page + int(pdf_read.getNumPages())
+        if start_page == end_page:
+            pages = str(start_page)
+        else:
+           pages = str(start_page) + "-" + str(end_page)
+
+        index_count += 1
+        start_page = end_page + 1
+            
+        table.add_row()
+        row = table.rows[index]
+        row.cells[0].text = str(index_count)
+        row.cells[1].text = str(doc.name)
+        row.cells[2].text = str(doc.date)
+        row.cells[3].text = str(pages)
+
+    table_doc.add_page_break()
+
+    table_doc.save(dir + "\index.docx")
 
     input("Press enter to exit")
 
