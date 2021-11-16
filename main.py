@@ -25,7 +25,7 @@ class document:
             print(str(type(doc_type)))
             self.doc_type = "Null"
         self.name = name
-        self.date = datetime.date.fromisoformat(date_string)
+        self.date = datetime.date.fromisoformat(date_string.strip())
         self.path_string = path_string
         print(path_string)
 
@@ -92,6 +92,8 @@ def main():
             continue
         doc_proc = doc.strip(".pdf").split(";")
         doc_class = document(int(doc_proc[0]), doc_proc[1], doc_proc[2], (dir + "/" + str(doc)))
+        if doc_class in doc_list:
+            print("Warning!  Duplicate detected!  Document = " + str(doc_class.name))
         doc_list.append(doc_class)
     print("Done")
 
