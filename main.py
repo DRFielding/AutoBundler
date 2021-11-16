@@ -1,3 +1,5 @@
+# Bundling automation proof of concept
+
 import PyPDF2
 from PyPDF2.merger import PdfFileMerger
 from PyPDF2.pdf import PdfFileReader
@@ -31,22 +33,69 @@ def returnDate(doc_arg):
     return doc_arg.date
 
 def main():
-    print("Initialising PDF handling...")
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%*  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%#  *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%(    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%#    %%%%%%%%%%     %%%%%       *%%%%%%%%%        %%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%     %%%%%%%%%%     %%%%%        %%%%%%%%         %%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%(    %%%%%%%%%%%     %%%%%         %%%%%%          %%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%     %%%%%%%%%%%     %%%%%    #     %%%%(    %     %%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%     %%%%%    #%     %%%    %%     %%%%%%%%%%%%,,%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%     %%%%%    #%%     %    %%%     %%%%%%%%%%%    %%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%     %%%%%    #%%%        /%%%     %%%%%%%%%%(    %%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%     %%%%%    #%%%%       %%%%     %%%%%%%%%%     %%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%     %%%%%    #%%%%/     %%%%%     %%%%%%%%%%    %%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    %%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    %%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#   %%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   %%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   %%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  %%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%( (%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%,/%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
 
     dir = input("Please enter the directory to bundle from: ")
 
-    print(dir)
+    program_start = DateTime.now()
+
+    if os.path.isdir(dir):
+        pass
+    else:
+        print("Given directory not found!  Please try another directory")
+        main()
 
     docs = os.listdir(dir)
+    if docs:
+        pass
+    else:
+        print("No files found in given directory!  Please try another folder")
+        main()
+
+    print("Finding docs...")
     doc_list = []
     for doc in docs:
-        print(doc)
+        if doc.endswith(".pdf") != True:
+            continue
+        elif doc == "bundle.pdf": #ignore any previous bundles
+            continue
         doc_proc = doc.strip(".pdf").split(";")
         doc_class = document(int(doc_proc[0]), doc_proc[1], doc_proc[2], (dir + "/" + str(doc)))
         doc_list.append(doc_class)
-    
-    print(str(doc_list))
+    print("Done")
 
+    print("Ordering...")
     key_1_list = [doc for doc in doc_list if doc.doc_type == "Pleadings"]
     key_2_list = [doc for doc in doc_list if doc.doc_type == "ET_Correspondence"]
     key_3_list = [doc for doc in doc_list if doc.doc_type == "Documents_Correspondence"]
@@ -58,9 +107,7 @@ def main():
     key_4_list.sort(key= lambda x: returnDate(x))
 
     master_list = key_1_list + key_2_list + key_3_list + key_4_list
-
-    for doc in master_list:
-        print(doc.name + ": " + str(doc.date))
+    print("Done")
 
     with open(dir + "/ListOfDocuements_" + str(date.today()) + ".txt", "w+") as x:
         index_count = 1
@@ -85,13 +132,16 @@ def main():
 
     print("List completed, see text file in given directory!")
 
+    print("Merging files and bundling...")
     pdf_merge = PdfFileMerger()
     for doc in master_list:
         pdf_merge.append(doc.path_string)
     pdf_merge.write(dir + "/bundle.pdf")
+    print("Done")
 
     print("Bundle is completed, see bundle.pdf!")
 
+    print("Creating table of documents...")
     table_doc = Document()
     table = table_doc.add_table(0,0)
     table.style = 'TableGrid'
@@ -130,6 +180,13 @@ def main():
     table_doc.add_page_break()
 
     table_doc.save(dir + "\index.docx")
+
+    program_end = DateTime.now()
+    duration = program_end - program_start
+
+    print("Done")
+
+    print("Finished in " + str(duration.total_seconds()) + " seconds")
 
     input("Press enter to exit")
 
