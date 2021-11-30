@@ -65,8 +65,18 @@ def main():
     "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
     "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n" +
     "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
-
+    
     dir = input("Please enter the directory to bundle from: ")
+    
+    #try:
+    #   doc_types = int(input("Please enter the number of document types you wish to sort: "))
+    #except:
+    #   print("Not an integer/number, please try again")
+    #   main()
+    #doc_type_list = []
+    #for doc_type in range doc_types:
+    #   defined_doc_type = input("Please enter document type number " + str(doc_type) + " (for example, 'Pleadings') and press enter: ")
+    #   doc_type_list.append(defined_doc_type)
 
     program_start = DateTime.now()
 
